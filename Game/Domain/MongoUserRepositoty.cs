@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -15,7 +16,10 @@ namespace Game.Domain
             userCollection.Indexes.CreateOne(
                 new CreateIndexModel<UserEntity>(
                     new IndexKeysDefinitionBuilder<UserEntity>()
-                        .Ascending(u => u.Login)));
+                        .Ascending(u => u.Login), new CreateIndexOptions() 
+                    {
+                        Unique = true
+                    }));
         }
 
         public UserEntity Insert(UserEntity user)
