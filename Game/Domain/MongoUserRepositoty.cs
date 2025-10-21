@@ -21,29 +21,27 @@ namespace Game.Domain
         public UserEntity Insert(UserEntity user)
         {
             userCollection.InsertOne(user);
-            
+
             return FindById(user.Id);
         }
 
         public UserEntity FindById(Guid id)
         {
-            var filter = new BsonDocument();
-            using var cursor = userCollection.Find(filter).ToCursor();
-            return cursor.FirstOrDefault();
+            var user = userCollection.Find(entity => entity.Id == id).FirstOrDefault();
+            return user;
         }
 
         public UserEntity GetOrCreateByLogin(string login)
         {
             return userCollection
                        .Find(item => item.Login == login)
-                       .FirstOrDefault() 
+                       .FirstOrDefault()
                    ?? Insert(new UserEntity() { Login = login });
         }
 
         public void Update(UserEntity user)
         {
-            var filter = new BsonDocument();
-            userCollection.ReplaceOne(filter, user);
+            userCollection.ReplaceOne(entity => entity.Id == user.Id, user);
         }
 
         public void Delete(Guid id)
@@ -62,10 +60,10 @@ namespace Game.Domain
                 {
                     Sort = new SortDefinitionBuilder<UserEntity>()
                         .Ascending(x => x.Login),
-                    Skip = (pageNumber - 1) * pageSize ,
+                    Skip = (pageNumber - 1) * pageSize,
                     Limit = pageSize,
                 });
-            return new PageList<UserEntity>(usersCursor.ToList(),  count, pageNumber,  pageSize);
+            return new PageList<UserEntity>(usersCursor.ToList(), count, pageNumber, pageSize);
         }
 
         // Не нужно реализовывать этот метод
