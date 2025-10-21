@@ -1,4 +1,5 @@
 using System;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Game.Domain
@@ -21,8 +22,9 @@ namespace Game.Domain
 
         public UserEntity FindById(Guid id)
         {
-            //TODO: Ищи в документации FindXXX
-            throw new NotImplementedException();
+            var filter = new BsonDocument();
+            using var cursor = userCollection.Find(filter).ToCursor();
+            return cursor.FirstOrDefault();
         }
 
         public UserEntity GetOrCreateByLogin(string login)
@@ -33,8 +35,8 @@ namespace Game.Domain
 
         public void Update(UserEntity user)
         {
-            //TODO: Ищи в документации ReplaceXXX
-            throw new NotImplementedException();
+            var filter = new BsonDocument();
+            userCollection.ReplaceOne(filter, user);
         }
 
         public void Delete(Guid id)
